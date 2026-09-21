@@ -1,0 +1,79 @@
+---
+---
+
+<div class="card">
+	<h1>ようこそ</h1>
+	<p class="welcome">ログインに成功しました。</p>
+
+	<div class="info">
+		<div class="info-row">
+			<span class="info-label">ユーザーID</span>
+			<span class="info-value" id="userId">-</span>
+		</div>
+	</div>
+
+	<button type="button" class="btn btn-danger" id="logoutButton">ログアウト</button>
+</div>
+
+<style>
+	.welcome {
+		font-size: 15px;
+		text-align: center;
+		margin: 0 0 28px;
+		color: var(--muted);
+	}
+
+	.info {
+		margin: 0 0 28px;
+		padding: 16px;
+		background: var(--input-bg);
+		border: 1px solid var(--border);
+		border-radius: 14px;
+	}
+
+	.info-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		font-size: 14px;
+	}
+
+	.info-label { color: var(--subtle); }
+
+	.info-value {
+		font-weight: 600;
+		color: var(--text);
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	}
+</style>
+
+<script>
+	import { clearStoredUserId, getStoredUserId, signout } from '../api'
+
+	const userIdElement = document.getElementById('userId')
+	const logoutButton = document.getElementById(
+		'logoutButton',
+	) as HTMLButtonElement | null
+
+	const userId = getStoredUserId()
+
+	if (!userId) {
+		window.location.replace('/')
+	} else if (userIdElement) {
+		userIdElement.textContent = userId
+	}
+
+	logoutButton?.addEventListener('click', async () => {
+		logoutButton.disabled = true
+		logoutButton.textContent = 'ログアウト中...'
+
+		try {
+			await signout()
+		} catch (error) {
+			console.error('signout error:', error)
+		}
+
+		clearStoredUserId()
+		window.location.replace('/')
+	})
+</script>
